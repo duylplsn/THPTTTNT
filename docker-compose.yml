@@ -1,0 +1,37 @@
+
+
+services:
+  backend-ai:
+    build:
+      context: ./backend
+    image: animal-backend
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"       # CHỈNH: map host 3000 → container 80 (Nginx)
+    depends_on:
+      - backend-ai
+
+  admin-panel:
+    build: ./admin-panel
+    ports:
+      - "4000:80"       # CHỈNH: map host 4000 → container 80 (Nginx)
+    depends_on:
+      - backend-ai
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: animal_db
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+volumes:
+  db_data:

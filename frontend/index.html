@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Animal Classifier</title>
+</head>
+<body>
+  <h1>Animal Classifier</h1>
+
+  <input type="file" id="img" accept="image/*" />
+
+  
+  <button id="classifyBtn">Classify</button>
+  <pre id="out" style="background:#f0f0f0; padding:10px;"></pre>
+
+  <script>
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('classifyBtn');
+      const out = document.getElementById('out');
+      const imgInput = document.getElementById('img');
+
+      btn.addEventListener('click', async () => {
+   
+        const file = imgInput.files[0];
+        if (!file) {
+          alert('Vui lòng chọn ảnh trước khi nhấn Classify.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+    
+        try {
+          const response = await fetch('http://localhost:5000/classify', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server trả về lỗi ${response.status}`);
+          }
+
+          const result = await response.json();
+          out.textContent = JSON.stringify(result, null, 2);
+        } catch (err) {
+          out.textContent = `Error: ${err.message}`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
